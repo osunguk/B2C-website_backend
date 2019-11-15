@@ -132,18 +132,42 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/2.2/howto/static-files/
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 AUTH_USER_MODEL = 'app.User'
-MEDIA_URL = '/media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 
 # Simplified static file serving.
 # https://warehouse.python.org/project/whitenoise/
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+
 
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+
+if DEBUG:
+    STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+    STATIC_URL = '/static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+else:
+    # AWS Setting
+    AWS_REGION = 'ap-northeast-2'
+    AWS_STORAGE_BUCKET_NAME = 'react-django'
+    AWS_QUERYSTRING_AUTH = False
+    AWS_S3_HOST = 's3.%s.amazonaws.com' % AWS_REGION
+    AWS_ACCESS_KEY_ID = 'AKIATYXM53EIVF5GGVUN'
+    AWS_SECRET_ACCESS_KEY = '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'
+    AWS_S3_CUSTOM_DOMAIN = '%s.s3.amazonaws.com' % AWS_STORAGE_BUCKET_NAME
+
+    # Static Setting
+    STATIC_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+    STATICFILES_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+
+    # Media Setting
+    MEDIA_URL = "https://%s/" % AWS_S3_CUSTOM_DOMAIN
+    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto.S3BotoStorage'
+
 
 
 """AUTHENTICATION_BACKENDS = (
