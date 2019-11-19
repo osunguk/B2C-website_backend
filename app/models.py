@@ -14,11 +14,13 @@ class User(AbstractUser):
     KAKAO = 2
     FACEBOOK = 3
     NAVER = 4
+    GOOGLE = 5
     USER_TYPE = (
         (NOMAL, 'Nomal'),
         (KAKAO, 'Kakao'),
         (FACEBOOK, 'Facebook'),
-        (NAVER, 'Naver')
+        (NAVER, 'Naver'),
+        (GOOGLE, 'Google')
     )
     # 기본 정보
     role_profile = models.PositiveSmallIntegerField('BC 유형', choices=ROLE_CHOICES, null=True, blank=True)

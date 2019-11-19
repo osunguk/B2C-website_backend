@@ -2,9 +2,11 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from .serializers import MyRegistrationView
+from django.contrib import admin
 from . import views
 
 urlpatterns = [
+    path('', admin.site.urls),
     path('rest-auth/registration/signup/', MyRegistrationView.as_view()),
     path('user/', views.UserList.as_view()),
     path('user/<int:pk>', views.UserDetail.as_view(), name='user-detail'),
