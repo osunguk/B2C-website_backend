@@ -4,6 +4,17 @@ from .models import User, Store, Review, Review_file, Review_comment, Store_file
 from django.db.models import Avg
 
 
+class StoreInline(admin.TabularInline):
+    model = Store
+    extra = 0
+
+
+class ReviewInline(admin.TabularInline):
+    model = Review
+    readonly_fields = ['u_id', 'comment', 'star_score']
+
+
+@admin.register(User)
 class MyUserAdmin(UserAdmin):
     model = User
 
@@ -13,8 +24,10 @@ class MyUserAdmin(UserAdmin):
 
     list_display = ('username', 'email', 'role_profile', 'is_staff', 'user_type',)
     readonly_fields = ['username', 'email', 'role_profile', 'user_type']
+    inlines = [StoreInline]
 
 
+@admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(StoreAdmin, self).get_queryset(request)
@@ -39,12 +52,14 @@ class StoreAdmin(admin.ModelAdmin):
 
     reviews_count.short_description = '리뷰 수'
     average_star_score.short_description = '평점'
+    admin.ModelAdmin.short_description = "Review"
     list_display = ('store_name', 'u_id', 'business_number', 'reviews_count', 'average_star_score')
     search_fields = ('store_name', 'business_number')
     readonly_fields = ['u_id', 'store_name', 'business_number', ]
-    admin.ModelAdmin.short_description = "Review"
+    inlines = [ReviewInline]
 
 
+@admin.register(Review)
 class ReviewAdmin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(ReviewAdmin, self).get_queryset(request)
@@ -64,6 +79,7 @@ class ReviewAdmin(admin.ModelAdmin):
     readonly_fields = ['s_id', 'u_id', 'star_score', 'created_at', ]
 
 
+@admin.register(Review_comment)
 class Review_comment_Admin(admin.ModelAdmin):
     def get_queryset(self, request):
         qs = super(Review_comment_Admin, self).get_queryset(request)
@@ -92,15 +108,11 @@ class TagAdmin(admin.ModelAdmin):
 
 
 class StoreTagAdmin(admin.ModelAdmin):
-    list_display = ('s_id','t_id', 'u_id')
+    list_display = ('s_id', 't_id', 'u_id')
 
 
-admin.site.register(User, MyUserAdmin)
-admin.site.register(Store, StoreAdmin)
-admin.site.register(Review, ReviewAdmin)
 admin.site.register(Review_file, ReviewFileAdmin)
-admin.site.register(Review_comment, Review_comment_Admin)
 admin.site.register(Store_file)
 admin.site.register(HashTag, TagAdmin)
-admin.site.register(StoreTags,StoreTagAdmin)
+admin.site.register(StoreTags, StoreTagAdmin)
 
